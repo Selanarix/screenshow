@@ -14,8 +14,8 @@
 	<p class="warning"> Keine Internetverbindung </p>
    </div>
    <div id="imageWrapper" class="hide">
-	   <img id="bild1" style="width: 100%;" src="thw-logo.jpg" alt="THW-Logo" />
-	   <img id="bild2" style="width: 100%; display: none;" src="thw-logo.jpg" alt="THW-Logo" />
+	   <img id="bild1" style="height: 100%;" src="thw-logo.jpg" alt="THW-Logo" />
+	   <img id="bild2" style="height: 100%; display: none;" src="thw-logo.jpg" alt="THW-Logo" />
    </div>
    <script>
     var PATH_OF_IMG_SERVER = "http://twocoders.de/bewerbung/thw/";
@@ -57,14 +57,6 @@
 	function setImage(img)
 	{
 		img.attr('src',PATH_OF_IMG_SERVER+'test.php?'+(new Date()).getTime());
-	}
-	
-	function logLine(message)
-	{
-		$.ajax(PATH_OF_IMG_SERVER+'logger.php',{
-			data: { line : message },
-			type: "POST"
-		});
 	}
    </script>
    </body>
