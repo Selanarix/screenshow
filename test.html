@@ -1,63 +1,103 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
- <head>
-	<script src="jquery-2.1.1.min.js"></script>
-	<script src="jquery.timer.js"></script> 
-	<meta charset="utf-8">
-	<title>jQuery demo</title>
-	<link rel="stylesheet" type="text/css" href="style.css" media="screen" />
- </head>
- <body>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>Screenshow</title>
+    <link rel="stylesheet" type="text/css" href="style.css" media="screen"/>
+</head>
+<body>
+    <div id="warn" class="warning">
+        <img alt="" class="warning" src="notify.png"/>
+        <p class="warning"> Keine Internetverbindung </p>
+    </div>
+    <div id="imageWrapper" class="hide">
+        <img id="bild1" style="" src="thw-logo.jpg" alt="THW-Logo"/>
+        <img id="bild2" style="display: none;" src="thw-logo.jpg" alt="THW-Logo"/>
+    </div>
+    <script src="jquery-2.1.1.min.js" type="text/javascript"></script>
+    <script src="jquery.timer.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        // <!--
+        var options = {
+            imgUrl: "http://twocoders.de/bewerbung/thw/",
+            upscale: true,
+            displayTime: 10000,
+            enableLogging: true
+        };
+        var count = 0;
 
-   <div id="warn" class="warning">
-	<img alt="" class="warning" src="notify.png" />
-	<p class="warning"> Keine Internetverbindung </p>
-   </div>
-   <div id="imageWrapper" class="hide">
-	   <img id="bild1" style="height: 100%;" src="thw-logo.jpg" alt="THW-Logo" />
-	   <img id="bild2" style="height: 100%; display: none;" src="thw-logo.jpg" alt="THW-Logo" />
-   </div>
-   <script>
-    var PATH_OF_IMG_SERVER = "http://twocoders.de/bewerbung/thw/";
-	setImage($('#bild2'));
-	var count = 0;
-	var timer = $.timer(function() 
-	{
-		console.log("img cycle count "+count++);
-		var visible = $('#imageWrapper img:visible');
-		var hidden = $('#imageWrapper img:hidden');
+        setImage($('#bild2'));
 
-		if (!hidden[0].complete || typeof hidden[0].naturalWidth == "undefined" || hidden[0].naturalWidth == 0)
-		{
-			hidden.attr('src','thw-logo.jpg'); //Show logo in error case
-			console.log("set default img");
-		}
-		if(hidden.attr('src') != visible.attr('src')) 
-		{
-			$('#warn').css('display', 'none');
-			visible.hide();
-			setImage(visible);
-			hidden.show();
-		}
-		else
-			setImage(hidden); //don't fade if current and next picture are the same (e.g. error pic -> error pic), but try to set new image
-	});
-	
-	$("#imageWrapper img").error(function()
-	{
-		$(this).attr('src','thw-logo.jpg');
-		$('#warn').css('display', 'block');
-	}).load(function()
-	{
-		
-	});
-	
-	timer.set({ time : 2000, autostart : true });
-	
-	function setImage(img)
-	{
-		img.attr('src',PATH_OF_IMG_SERVER+'test.php?'+(new Date()).getTime());
-	}
-   </script>
-   </body>
- </html>
+        var imageWrapper = $('#imageWrapper');
+        var timer = $.timer(function () {
+            log("img cycle count " + count++);
+            var visible = $('img:visible', imageWrapper);
+            var hidden = $('img:hidden', imageWrapper);
+
+            if (!hidden[0].complete || typeof hidden[0].naturalWidth == "undefined" || hidden[0].naturalWidth == 0) {
+                hidden.attr('src', 'thw-logo.jpg'); //Show logo in error case
+                log("set default img");
+            }
+            if (hidden.attr('src') != visible.attr('src')) {
+                $('#warn').css('display', 'none');
+                visible.hide();
+                setImage(visible);
+                hidden.show();
+            }
+            else
+                setImage(hidden); //don't fade if current and next picture are the same (e.g. error pic -> error pic), but try to set new image
+        });
+
+        $("img", imageWrapper)
+            .error(function () {
+                $(this).attr('src', 'thw-logo.jpg');
+                $('#warn').css('display', 'block');
+            })
+            .load(function () {
+                var originalHeight = $(this).height();
+                var originalWidth = $(this).width();
+                log('height: ' + originalHeight);
+                log('width: ' + originalWidth);
+
+                var docHeight = $(window).height();
+                var docWidth = $(window).width();
+
+                var scaleHeight = docHeight / originalHeight;
+                if (!options.upscale && scaleHeight > 1) {
+                    scaleHeight = 1;
+                }
+                var scaleWidth = docWidth / originalWidth;
+                if (!options.upscale && scaleWidth > 1) {
+                    scaleWidth = 1;
+                }
+                var scale = (scaleHeight < scaleWidth) ? scaleHeight : scaleWidth;
+                $(this).css({
+                    width: originalWidth * scale, //'*=' + scale,
+                    height: originalHeight * scale //'*=' + scale
+                });
+            })
+        ;
+        timer.set({ time: options.displayTime, autostart: true });
+
+        function setImage(img) {
+            img
+                .css({
+                    width: '',
+                    height: ''
+                })
+                .attr('src', options.imgUrl + 'test.php?' + (new Date()).getTime())
+            ;
+        }
+        function log(txt) {
+            if (!options.enableLogging) {
+                return;
+            }
+            if (console.log !== undefined) {
+                console.log(txt);
+            }
+        }
+        // -->
+    </script>
+</body>
+</html>
